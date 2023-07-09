@@ -4,7 +4,7 @@
 
 -- Новая БД
 CREATE DATABASE hw_1;
-USE phones;
+USE hw_1;
 
 -- 1. Новая таблица
 CREATE TABLE phones (
