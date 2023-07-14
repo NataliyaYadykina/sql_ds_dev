@@ -97,6 +97,21 @@ VALUES
 (1, 4),
 (3, 1);
 
+INSERT INTO `cities` (`name`)
+VALUES
+('Moscow'),
+('Tula'),
+('Lipetsk'),
+('Orel');
+
+INSERT INTO `profiles` (`user_id`, `gender`, `birthday`, `hometown`, `city_id`)
+VALUES 
+(1, 'm', '2000-10-21', 'Moscow', 1),
+(2, 'm', '2009-11-20', 'Tula', 2),
+(3, 'f', '2010-12-23', 'Lipetsk', 3),
+(4, 'm', '2002-06-23', 'Moscow', 1),
+(5, 'f', '2003-03-11', 'Orel', 4);
+
 
 /* Задача 4
 Написать скрипт, отмечающий несовершеннолетних пользователей как неактивных (поле is_active = true). 
@@ -104,9 +119,41 @@ VALUES
 со значением по умолчанию = false (или 0) (ALTER TABLE + UPDATE)
 */
 # Добавим новую колонку is_active
-ALTER TABLE profiles ADD COLUMN is_active BOOL DEFAULT FALSE;
+ALTER TABLE profiles ADD COLUMN is_active BOOL DEFAULT TRUE;
+
+UPDATE profiles
+SET is_active = 0
+WHERE (birthday + INTERVAL 18 YEAR) > NOW();
 
 
+/* Задача 5
+ * Написать скрипт, удаляющий сообщения «из будущего» (дата позже сегодняшней)
+ */
+
+-- добавим флаг is_deleted 
+ALTER TABLE messages 
+ADD COLUMN is_deleted BIT DEFAULT 0;
+
+-- отметим пару сообщений неправильной датой
+UPDATE messages
+SET created_at = NOW() + INTERVAL 1 year
+LIMIT 2;
+
+-- отметим, как удаленные, сообщения "из будущего"
+UPDATE messages
+SET is_deleted = 1
+WHERE created_at > NOW();
+
+
+-- физически удалим сообщения "из будущего"
+DELETE FROM messages
+WHERE created_at > NOW();
+
+
+-- проверим
+SELECT *
+FROM messages
+ORDER BY created_at DESC;
 
 
 
