@@ -91,6 +91,27 @@ call proc_del_user(3);
  * Длина названия сообщества (поле name) должна быть не менее 5 символов. 
  * Если требование не выполнено, то выбрасывать исключение с пояснением.
  */
+-- триггер для проверки нового сообщества
+USE hw_4_dev;
+drop TRIGGER if exists check_title_community;
+
+DELIMITER //
+
+CREATE TRIGGER check_title_community BEFORE INSERT ON communities
+FOR EACH ROW
+begin
+    IF LENGTH(NEW.name) < 5 THEN
+		SIGNAL SQLSTATE '45000' 
+		SET MESSAGE_TEXT = 'Обновление отменено. Длина названия сообщества должна быть не менее 5 символов.';
+    END IF;
+END//
+
+DELIMITER ;
+
+INSERT INTO `communities` VALUES (11,'community11');
+INSERT INTO `communities` VALUES (12,'com');
+
+
 
 
 
